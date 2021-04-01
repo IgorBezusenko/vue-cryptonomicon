@@ -1,6 +1,5 @@
 const API_KEY =
   "495e2a5dccb31ad4ccad1d71c9127ea4ae46cf72c3da30b085087524e50215eb";
-
 const tickersHandlers = new Map(); // {}
 const socket = new WebSocket(
   `wss://streamer.cryptocompare.com/v2?api_key=${API_KEY}`
@@ -9,15 +8,15 @@ const socket = new WebSocket(
 const AGGREGATE_INDEX = "5";
 
 socket.addEventListener("message", e => {
-  const { TYPE: type, FROMSYMBOL: currency, PRICE: newPrice } = JSON.parse(e.data);
-
-  if (type !== AGGREGATE_INDEX) {
+  const { TYPE: type, FROMSYMBOL: currency, PRICE: newPrice } = JSON.parse(
+    e.data
+  );
+  if (type !== AGGREGATE_INDEX || newPrice === undefined) {
     return;
   }
 
   const handlers = tickersHandlers.get(currency) ?? [];
   handlers.forEach(fn => fn(newPrice));
-
 });
 
 function sendToWebSocket(message) {
@@ -27,7 +26,10 @@ function sendToWebSocket(message) {
     socket.send(stringifiedMessage);
     return;
   }
-  socket.addEventListener("open", () => {
+
+  socket.addEventListener(
+    "open",
+    () => {
       socket.send(stringifiedMessage);
     },
     { once: true }
@@ -36,15 +38,15 @@ function sendToWebSocket(message) {
 
 function subscribeToTickerOnWs(ticker) {
   sendToWebSocket({
-    "action": "SubAdd",
-    "subs": [`5~CCCAGG~${ticker}~USD`]
+    action: "SubAdd",
+    subs: [`5~CCCAGG~${ticker}~USD`]
   });
 }
 
 function unsubscribeFromTickerOnWs(ticker) {
   sendToWebSocket({
-    "action": "SubRemove",
-    "subs": [`5~CCCAGG~${ticker}~USD`]
+    action: "SubRemove",
+    subs: [`5~CCCAGG~${ticker}~USD`]
   });
 }
 
@@ -58,6 +60,7 @@ export const unsubscribeFromTicker = ticker => {
   tickersHandlers.delete(ticker);
   unsubscribeFromTickerOnWs(ticker);
 };
+
 
 // //TODO: refactor to use URLSearchParams
 // const loadTickers = () => {
