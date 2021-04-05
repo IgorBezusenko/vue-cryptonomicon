@@ -63,7 +63,8 @@
           <div>Фильтр: <input v-model="filter" /></div>
         </div>
         <hr class="w-full border-t border-gray-600 my-4" />
-        <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+
+        <dl class="mt-5  grid grid-cols-1 gap-5 sm:grid-cols-3">
           <div
             v-for="t in paginatedTickers"
             :key="t.name"
@@ -73,7 +74,7 @@
             }"
             class="bg-white overflow-hidden shadow rounded-lg border-purple-800 border-solid cursor-pointer"
           >
-            <div class="px-4 py-5 sm:p-6 text-center">
+            <div :class="{'bg-red-100': t.price==='-'}" class="px-4  py-5 sm:p-6 text-center">
               <dt class="text-sm font-medium text-gray-500 truncate">
                 {{ t.name }} - USD
               </dt>
@@ -102,6 +103,7 @@
             </button>
           </div>
         </dl>
+
         <hr class="w-full border-t border-gray-600 my-4" />
       </template>
       <section v-if="selectedTicker" class="relative">
@@ -281,7 +283,7 @@ export default {
 
     add() {
       const currentTicker = {
-        name: this.ticker,
+        name: this.ticker.toUpperCase(),
         price: "-"
       };
 
