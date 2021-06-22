@@ -238,13 +238,16 @@ export default {
     startIndex() {
       return (this.page - 1) * 6;
     },
+    tickerToUpper() {
+      return this.ticker.toUpperCase();
+    },
 
     endIndex() {
       return this.page * 6;
     },
 
     filteredTickers() {
-      return this.tickers.filter(ticker => ticker.name.includes(this.filter));
+      return this.tickers.filter((ticker) => ticker.name.includes(this.filter));
     },
 
     paginatedTickers() {
@@ -264,7 +267,7 @@ export default {
       }
 
       return this.graph.map(
-        price => 5 + ((price - minValue) * 95) / (maxValue - minValue)
+        (price) => 5 + ((price - minValue) * 95) / (maxValue - minValue)
       );
     },
 
@@ -307,17 +310,22 @@ export default {
     },
 
     add() {
-      const currentTicker = {
-        name: this.ticker,
-        price: "-"
-      };
+      if (this.ticker === "") {
+        return;
+      } else {
+        const currentTicker = {
+          name: this.ticker.toUpperCase().trim(),
+          price: "-"
+        };
 
-      this.tickers = [...this.tickers, currentTicker];
-      this.ticker = "";
-      this.filter = "";
-      subscribeToTicker(currentTicker.name, newPrice =>
-        this.updateTicker(currentTicker.name, newPrice)
-      );
+        this.tickers = [...this.tickers, currentTicker];
+        this.ticker = "";
+        this.filter = "";
+        subscribeToTicker(currentTicker.name, newPrice =>
+          this.updateTicker(currentTicker.name, newPrice)
+        );
+      }
+
     },
 
     select(ticker) {
